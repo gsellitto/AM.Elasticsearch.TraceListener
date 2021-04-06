@@ -1,5 +1,8 @@
 # AM.Elasticsearch.TraceListener
 
+## 3.1 Release Notes
+
+Added attributes elasticsearchusername and elasticsearchpassword, for connect to ElasticSearch server with basic authentication.
 ## 3.0 Release Notes
 
 the _type submitted is being changed from `Trace` to `doc` in preparation to posting to Elasticsearch 6.x, as _type is being deprecated.
@@ -45,7 +48,8 @@ edit your app.config/web.config
         <sharedListeners>
             <add name="estl" 
          type="AM.Elasticsearch.TraceListener.ElasticSearchTraceListener, AM.Elasticsearch.TraceListener" 
-         ElasticSearchUri="http://localhost:9200" ElasticSearchTraceIndex="trace" />
+         ElasticSearchUri="http://localhost:9200" ElasticSearchTraceIndex="trace" 
+         ElasticSearchUserName="xxxxxx" ElasticSearchPassword="xxxxx"/>
         </sharedListeners>
         <trace autoflush="false" indentsize="4">
           <listeners>

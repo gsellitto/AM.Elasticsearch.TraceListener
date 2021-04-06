@@ -53,6 +53,7 @@ namespace AM.Elasticsearch.TraceListener
 
             //this attribute is to be removed next minor release
             "ElasticSearchIndex", "elasticSearchIndex", "elasticsearchindex",
+            "elasticsearchusername","ElasticSearchUserName","elasticsearchpassword","ElasticSearchPassword"
 
         };
 
@@ -100,7 +101,7 @@ namespace AM.Elasticsearch.TraceListener
                 }
                 else
                 {
-                    return _defaultIndexName;
+                    return "";
                 }
             }
             set
@@ -109,7 +110,49 @@ namespace AM.Elasticsearch.TraceListener
             }
         }
 
+        /// <summary>
+        /// Username for basic authentication to elasticserver
+        /// </summary>
+        public string ElasticSearchUserName
+        {
+            get
+            {
+                if (Attributes.ContainsKey("elasticsearchusername"))
+                {
+                    return Attributes["elasticsearchusername"];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                Attributes["elasticsearchusername"] = value;
+            }
+        }
 
+        /// <summary>
+        /// Password for basic authentication to elastiserver
+        /// </summary>
+        public string ElasticSearchPassword
+        {
+            get
+            {
+                if (Attributes.ContainsKey("elasticsearchpassword"))
+                {
+                    return Attributes["elasticsearchpassword"];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                Attributes["elasticsearchpassword"] = value;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating the trace listener is thread safe.
@@ -131,10 +174,14 @@ namespace AM.Elasticsearch.TraceListener
 
 					var singleNode = new SingleNodeConnectionPool(Uri);
 
-	                var cc = new ConnectionConfiguration(singleNode,
-			                connectionSettings => new ElasticsearchJsonNetSerializer())
-		                .EnableHttpPipelining()
-		                .ThrowExceptions();
+                    var cc = new ConnectionConfiguration(singleNode,
+                            connectionSettings => new ElasticsearchJsonNetSerializer())
+                        .EnableHttpPipelining()
+                        .ThrowExceptions();
+                    if (this.ElasticSearchPassword.Length > 0)
+                    {
+                        cc.BasicAuthentication(this.ElasticSearchUserName, this.ElasticSearchPassword);
+                    }
 
 					//the 1.x serializer we needed to use, as the default SimpleJson didnt work right
 					//Elasticsearch.Net.JsonNet.ElasticsearchJsonNetSerializer()

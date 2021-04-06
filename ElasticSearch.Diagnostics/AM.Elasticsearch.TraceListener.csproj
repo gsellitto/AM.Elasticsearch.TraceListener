@@ -2,27 +2,30 @@
   <PropertyGroup>
     <Authors>Alex McCool</Authors>
     <Company />
-    <PackageId>AM.ElasticSearch.TraceListener</PackageId>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>AM.ElasticSearch.TraceListenerAuth</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>AM.Elasticsearch.TraceListener</AssemblyName>
     <RootNamespace>AM.Elasticsearch.TraceListener</RootNamespace>
-    <TargetFramework>netstandard20</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>AM.ElasticSearch.TraceListener</AssemblyTitle>
-    <Product>AM.ElasticSearch.TraceListener</Product>
+    <Product>AM.ElasticSearch.TraceListenerAuth</Product>
     <Description>TraceListener for ElasticSearch and kibana</Description>
     <Copyright>MIT</Copyright>
     <Version>1.2.0.0</Version>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <FileVersion>1.2.0.1</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <PackageProjectUrl>https://github.com/amccool/AM.Elasticsearch.TraceListener</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/gsellitto/AM.Elasticsearch.TraceListener</PackageProjectUrl>
     <PackageTags>Diagnostics, Trace, TraceListener, ElasticSearch, Kibana</PackageTags>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>stampe.pfx</AssemblyOriginatorKeyFile>
+    <UserSecretsId>515b1684-d6b9-45f6-949d-5d2dd518c58f</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Elasticsearch.Net" Version="2.5.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="System.Reactive" Version="4.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
