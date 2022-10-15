@@ -15,13 +15,10 @@ namespace ConsoleApp3
                 new AM.Elasticsearch.TraceListener.ElasticSearchTraceListener("EPCAPI",
                 "https://localhost:9200", "elastic", "hJ3neUHqIeYwaQ6y1ndN", "ciccio2"));
 
-            System.Diagnostics.Trace.TraceError("ook");
-            System.Diagnostics.Trace.TraceError("ook");
-            System.Diagnostics.Trace.Flush();
-            System.Diagnostics.Trace.TraceError("ook");
-            System.Diagnostics.Trace.TraceError("ook");
-            System.Diagnostics.Trace.TraceError("ook");
+           
+            var c = new ciccio();
 
+            Trace.Write(c);
             try
             {
                 Trace.Write("Entering");
@@ -39,4 +36,10 @@ namespace ConsoleApp3
             Task.Delay(200000).Wait();
         }
     }
+}
+
+public class ciccio {
+
+    string uno = "unoval";
+    string due = "tre";
 }
