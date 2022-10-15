@@ -1,5 +1,6 @@
 ﻿using Elasticsearch.Net;
-using ElasticSearch.Diagnostics.Serialization;
+using Nest;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -28,9 +29,9 @@ namespace AM.Elasticsearch.TraceListener
         private const string _defaultIndexName = "trace";
         private const string _defaultUri = "http://localhost:9200/";
 
-        private readonly BlockingCollection<JObject> _queueToBePosted = new BlockingCollection<JObject>();
+        private readonly BlockingCollection<TraceEntry> _queueToBePosted = new BlockingCollection<TraceEntry>();
 
-        private IElasticLowLevelClient _client;
+        private ElasticClient _client;
 
         private readonly string _userDomainName;
         private readonly string _userName;
@@ -160,7 +161,7 @@ namespace AM.Elasticsearch.TraceListener
         /// <value>true</value>
         public override bool IsThreadSafe => true;
 
-        public IElasticLowLevelClient Client
+        public ElasticClient Client
         {
             get
             {
@@ -172,21 +173,24 @@ namespace AM.Elasticsearch.TraceListener
                 {
                     Uri = new Uri(this.ElasticSearchUri);
 
-					var singleNode = new SingleNodeConnectionPool(Uri);
+					var pool = new SingleNodeConnectionPool(Uri);
 
-                    var cc = new ConnectionConfiguration(singleNode,
-                            connectionSettings => new ElasticsearchJsonNetSerializer())
-                        .EnableHttpPipelining()
-                        .ThrowExceptions();
+                    var settings = new ConnectionSettings(pool)
+                     .ServerCertificateValidationCallback((o, certificate, chain, errors) => true)
+                    .EnableApiVersioningHeader()
+                    .DefaultIndex(Index);
+
+                    
+                  //  cc.ServerCertificateValidationCallback(CertificateValidations.AllowAll) ;
                     if (this.ElasticSearchPassword.Length > 0)
                     {
-                        cc.BasicAuthentication(this.ElasticSearchUserName, this.ElasticSearchPassword);
+                        settings.BasicAuthentication(this.ElasticSearchUserName, this.ElasticSearchPassword);
                     }
-
+                    
 					//the 1.x serializer we needed to use, as the default SimpleJson didnt work right
 					//Elasticsearch.Net.JsonNet.ElasticsearchJsonNetSerializer()
 
-	                this._client = new ElasticLowLevelClient(cc);
+	                this._client = new ElasticClient(settings);
                     return this._client;
                 }
             }
@@ -216,18 +220,31 @@ namespace AM.Elasticsearch.TraceListener
             Initialize();
         }
 
+        public ElasticSearchTraceListener(string name,string uri,string user,string password,string indexname) 
+            : base(name)
+        {
+            _userDomainName = Environment.UserDomainName;
+            _userName = Environment.UserName;
+            _machineName = Environment.MachineName;
+            ElasticSearchPassword = password;
+            ElasticSearchUserName = user;
+            ElasticSearchUri = uri;
+            ElasticSearchTraceIndex = indexname;
+            Initialize();
+        }
+
         private void Initialize()
         {
             //SetupObserver();
             SetupObserverBatchy();
         }
 
-        private Action<JObject> _scribeProcessor;
+        private Action<TraceEntry> _scribeProcessor;
         private string _machineName;
 
         private void SetupObserver()
         {
-            _scribeProcessor = a => WriteDirectlyToES(a);
+            _scribeProcessor = async a => WriteDirectlyToES(a);
 
             //this._queueToBePosted.GetConsumingEnumerable()
             //.ToObservable(Scheduler.Default)
@@ -376,37 +393,32 @@ namespace AM.Elasticsearch.TraceListener
             string threadId = eventCache != null ? eventCache.ThreadId : string.Empty;
             string thread = Thread.CurrentThread.Name ?? threadId;
 
-
-
-
             IPrincipal principal = Thread.CurrentPrincipal;
             IIdentity identity = principal?.Identity;
-            string identityname = identity == null ? string.Empty : identity.Name;
-
-            
+            string identityname = identity == null ? string.Empty : identity.Name;            
             string username = $"{_userDomainName}\\{_userName}";
 
             try
             {
-                var jo = new JObject
+                var jo = new TraceEntry
                     {
-                        {"Source", source },
-                        {"TraceId", traceId ?? 0},
-                        {"EventType", eventType.ToString()},
-                        {"UtcDateTime", logTime},
-                        {"timestamp", eventCache?.Timestamp ?? 0},
-                        {"MachineName", _machineName},
-                        {"AppDomainFriendlyName", AppDomain.CurrentDomain.FriendlyName},
-                        {"ProcessId", eventCache?.ProcessId ?? 0},
-                        {"ThreadName", thread},
-                        {"ThreadId", threadId},
-                        {"Message", message},
-                        {"ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? Trace.CorrelationManager.ActivityId.ToString() : string.Empty},
-                        {"RelatedActivityId", relatedActivityId.HasValue ? relatedActivityId.Value.ToString() : string.Empty},
-                        {"LogicalOperationStack", logicalOperationStack},
-                        {"Data", dataObject},
-                        {"Username", username},
-                        {"Identityname", identityname},
+                        Source= source,
+                        TraceId= traceId ?? 0,
+                        EventType= eventType.ToString(),
+                        UtcDateTime=logTime,
+                        timestamp= eventCache?.Timestamp ?? 0,
+                        MachineName=_machineName,
+                        AppDomainFriendlyName= AppDomain.CurrentDomain.FriendlyName,
+                        ProcessId= eventCache?.ProcessId ?? 0,
+                        ThreadName= thread,
+                        ThreadId= threadId,
+                        Message= message,
+                        ActivityId= Trace.CorrelationManager.ActivityId != Guid.Empty ? Trace.CorrelationManager.ActivityId.ToString() : string.Empty,
+                        RelatedActivityId= relatedActivityId.HasValue ? relatedActivityId.Value.ToString() : string.Empty,
+                        LogicalOperationStack= logicalOperationStack,
+                        Data= dataObject!=null ? dataObject.ToString():"",
+                        Username=username,
+                        Identityname= identityname
                     };
 
                 _scribeProcessor(jo);
@@ -417,11 +429,11 @@ namespace AM.Elasticsearch.TraceListener
             }
         }
 
-        private async Task WriteDirectlyToES(JObject jo)
+        private async Task WriteDirectlyToES(TraceEntry jo)
         {
 	        try
 	        {
-                await Client.IndexAsync<VoidResponse>(Index, DocumentType, jo.ToString());
+                await Client.IndexDocumentAsync( jo);
 	        }
 	        catch (Exception ex)
 	        {
@@ -429,20 +441,17 @@ namespace AM.Elasticsearch.TraceListener
 	        }
 		}
 
-        private async Task WriteDirectlyToESAsBatch(IEnumerable<JObject> jos)
+        private async Task WriteDirectlyToESAsBatch(IEnumerable<TraceEntry> jos)
         {
             if (!jos.Any())
                 return;
 
-            var indx = new { index = new { _index = Index, _type = DocumentType } };
-            var indxC = Enumerable.Repeat(indx, jos.Count());
-
-            var bb = jos.Zip(indxC, (f, s) => new object[] { s, f });
-            var bbo = bb.SelectMany(a => a);
-
+            
             try
             {
-	            await Client.BulkPutAsync<VoidResponse>(Index, DocumentType, bbo.ToArray(), br => br.Refresh(false));
+                var res=await Client.IndexManyAsync(jos);
+
+                int i = 0;
             }
             catch (Exception ex)
             {
@@ -450,7 +459,7 @@ namespace AM.Elasticsearch.TraceListener
             }
         }
 
-        private void WriteToQueueForProcessing(JObject jo)
+        private void WriteToQueueForProcessing(TraceEntry jo)
         {
             this._queueToBePosted.Add(jo);
         }
@@ -473,7 +482,7 @@ namespace AM.Elasticsearch.TraceListener
             base.Dispose(disposing);
         }
 
-        public void Dispose()
+        new public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

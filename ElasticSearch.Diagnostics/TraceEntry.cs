@@ -26,5 +26,9 @@ namespace AM.Elasticsearch.TraceListener
         public string RelatedActivityId { get; set; }
         public string LogicalOperationStack { get; set; }
         public string Data { get; set; }
+        public string Username { get; set; }
+        public string Identityname { get; set; }
+        
+                        
     }
 }

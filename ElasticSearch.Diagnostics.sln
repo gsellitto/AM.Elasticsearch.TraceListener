@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AM.Elasticsearch.TraceListener", "ElasticSearch.Diagnostics\AM.Elasticsearch.TraceListener.csproj", "{B6EFB16C-8FB2-4A19-BF34-312429FFF491}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AM.Elasticsearch.TraceListener", "ElasticSearch.Diagnostics\AM.Elasticsearch.TraceListener.csproj", "{B6EFB16C-8FB2-4A19-BF34-312429FFF491}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticSearch.Diagnostics.Tester", "ElasticSearch.Diagnostics.Tester\ElasticSearch.Diagnostics.Tester.csproj", "{C39151B8-2292-4864-8317-8C5F8A9343EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticSearch.Diagnostics.Tests", "ElasticSearch.Diagnostics.Tests\ElasticSearch.Diagnostics.Tests.csproj", "{DE28032C-C5C5-4611-A241-9B9BD2530E6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{506F8A84-E35B-4F15-9D15-FB0FB405FD49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{E1C4EF21-7FC5-48E2-B44F-B059D4574162}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp3", "ConsoleApp3\ConsoleApp3.csproj", "{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +33,18 @@ Global
 		{DE28032C-C5C5-4611-A241-9B9BD2530E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE28032C-C5C5-4611-A241-9B9BD2530E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE28032C-C5C5-4611-A241-9B9BD2530E6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{506F8A84-E35B-4F15-9D15-FB0FB405FD49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{506F8A84-E35B-4F15-9D15-FB0FB405FD49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{506F8A84-E35B-4F15-9D15-FB0FB405FD49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{506F8A84-E35B-4F15-9D15-FB0FB405FD49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1C4EF21-7FC5-48E2-B44F-B059D4574162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1C4EF21-7FC5-48E2-B44F-B059D4574162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1C4EF21-7FC5-48E2-B44F-B059D4574162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1C4EF21-7FC5-48E2-B44F-B059D4574162}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
