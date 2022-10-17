@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>Alex McCool</Authors>
+    <Authors>Ginaluigi Sellitto</Authors>
     <Company />
     <PackageId>AM.ElasticSearch.TraceListenerAuth</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

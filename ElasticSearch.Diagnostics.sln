@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticSearch.Diagnostics.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{506F8A84-E35B-4F15-9D15-FB0FB405FD49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{E1C4EF21-7FC5-48E2-B44F-B059D4574162}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{E1C4EF21-7FC5-48E2-B44F-B059D4574162}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp3", "ConsoleApp3\ConsoleApp3.csproj", "{8D70CB10-714F-42D3-AB9C-5F4E3C41DECE}"
 EndProject
@@ -21,8 +21,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6EFB16C-8FB2-4A19-BF34-312429FFF491}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C39151B8-2292-4864-8317-8C5F8A9343EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

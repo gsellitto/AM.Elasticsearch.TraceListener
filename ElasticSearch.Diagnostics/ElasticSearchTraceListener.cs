@@ -50,11 +50,12 @@ namespace AM.Elasticsearch.TraceListener
         private static readonly string[] _supportedAttributes = new string[]
         {
             "ElasticSearchUri", "elasticSearchUri", "elasticsearchuri",
-            "ElasticSearchTraceIndex", "elasticSearchTraceIndex", "elasticsearchtraceindex",
+            "ElasticSearchTraceIndex", "elasticSearchTraceIndex", "elasticsearchtraceindex","ElasticSearchTimeout","ElasticSearchBufferSize",
 
             //this attribute is to be removed next minor release
             "ElasticSearchIndex", "elasticSearchIndex", "elasticsearchindex",
             "elasticsearchusername","ElasticSearchUserName","elasticsearchpassword","ElasticSearchPassword"
+
 
         };
 
@@ -155,12 +156,44 @@ namespace AM.Elasticsearch.TraceListener
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating the trace listener is thread safe.
-        /// </summary>
-        /// <value>true</value>
-        public override bool IsThreadSafe => true;
+        public int ElasticSearchTimeout
+        {
+            get
+            {
+                if (Attributes.ContainsKey("elasticsearchtimeout"))
+                {
+                    return int.Parse(Attributes["elasticsearchtimeout"]);
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            set
+            {
+                Attributes["elasticsearchtimeout"] = value.ToString();
+            }
+        }
 
+        public int ElasticSearchBufferSize
+        {
+            get
+            {
+                if (Attributes.ContainsKey("elasticsearchbuffersize"))
+                {
+                    return int.Parse(Attributes["elasticsearchbuffersize"]);
+                }
+                else
+                {
+                    return 10;
+                }
+            }
+            set
+            {
+                Attributes["elasticsearchbuffersize"] = value.ToString();
+            }
+        }
+        
         public ElasticClient Client
         {
             get
@@ -179,17 +212,12 @@ namespace AM.Elasticsearch.TraceListener
                      .ServerCertificateValidationCallback((o, certificate, chain, errors) => true)
                     .EnableApiVersioningHeader()
                     .DefaultIndex(Index);
-
                     
-                  //  cc.ServerCertificateValidationCallback(CertificateValidations.AllowAll) ;
                     if (this.ElasticSearchPassword.Length > 0)
                     {
                         settings.BasicAuthentication(this.ElasticSearchUserName, this.ElasticSearchPassword);
                     }
-                    
-					//the 1.x serializer we needed to use, as the default SimpleJson didnt work right
-					//Elasticsearch.Net.JsonNet.ElasticsearchJsonNetSerializer()
-
+                    					
 	                this._client = new ElasticClient(settings);
                     return this._client;
                 }
@@ -220,7 +248,8 @@ namespace AM.Elasticsearch.TraceListener
             Initialize();
         }
 
-        public ElasticSearchTraceListener(string name,string uri,string user,string password,string indexname) 
+        public ElasticSearchTraceListener(string name,string uri,string user,string password,
+                string indexname,int timouttoflush,int buffersize) 
             : base(name)
         {
             _userDomainName = Environment.UserDomainName;
@@ -230,40 +259,29 @@ namespace AM.Elasticsearch.TraceListener
             ElasticSearchUserName = user;
             ElasticSearchUri = uri;
             ElasticSearchTraceIndex = indexname;
+            ElasticSearchBufferSize = buffersize;
+            ElasticSearchTimeout = timouttoflush;
             Initialize();
         }
 
         private void Initialize()
         {
-            //SetupObserver();
             SetupObserverBatchy();
         }
 
         private Action<TraceEntry> _scribeProcessor;
         private string _machineName;
 
-        private void SetupObserver()
-        {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _scribeProcessor = async a => WriteDirectlyToES(a);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-            //this._queueToBePosted.GetConsumingEnumerable()
-            //.ToObservable(Scheduler.Default)
-            //.Subscribe(x => WriteDirectlyToES(x));
-        }
-
-
+        
         private void SetupObserverBatchy()
         {
             _scribeProcessor = a => WriteToQueueForProcessing(a);
 
             this._queueToBePosted.GetConsumingEnumerable()
                 .ToObservable(Scheduler.Default)
-                .Buffer(TimeSpan.FromSeconds(1), 10)
+                .Buffer(TimeSpan.FromSeconds(ElasticSearchTimeout ), ElasticSearchBufferSize)
                 .Subscribe(async x => await this.WriteDirectlyToESAsBatch(x));
         }
-
 
 
         /// <summary>
@@ -347,10 +365,7 @@ namespace AM.Elasticsearch.TraceListener
                     payload.Add("data", data.ToString());   //rather than just log the name of the Type, this will give us the stack dump if data was originally an exception, maybe some other useful info
                 }
             }
-
-            //Debug.Assert(!string.IsNullOrEmpty(updatedMessage));
-            //Debug.Assert(payload != null);
-
+            
             InternalWrite(eventCache, source, eventType, id, updatedMessage, relatedActivityId, payload);
         }
 
