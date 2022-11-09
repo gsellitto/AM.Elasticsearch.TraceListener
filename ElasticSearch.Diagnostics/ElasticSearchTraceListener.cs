@@ -44,7 +44,7 @@ namespace AM.Elasticsearch.TraceListener
         /// <summary>
         /// prefix for the Index for traces
         /// </summary>
-        private string Index => this.ElasticSearchTraceIndex.ToLower() + "-" + DateTime.UtcNow.ToString("yyyy-MM-dd-HH");
+        private string Index => this.ElasticSearchTraceIndex.ToLower() + "-" + DateTime.UtcNow.ToString("yyyy-MM");
 
 
         private static readonly string[] _supportedAttributes = new string[]
